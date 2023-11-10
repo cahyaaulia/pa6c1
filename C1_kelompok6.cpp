@@ -254,60 +254,16 @@ void updateTiket(int nomorUrutan) {
     Tiket* current = head;
     int nomor = 1;
 
-    while (current != nullptr) {
+    while (current != NULL) {
         if (nomor == nomorUrutan) {
             string keberangkatan, tujuan, jam;
             int kursi;
             double harga;
-
             cin.ignore(); // Membersihkan buffer
-
-            if (cin.fail() || nomorUrutan <= 0 || nomorUrutan > nomor) {
-            cout << "Nomor urutan tidak valid. Masukkan nomor urutan tiket yang akan diperbarui." << endl;
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            return;
-            }
-
-            // Error handling untuk kota keberangkatan
-            do {
-                cout << "Masukkan Kota Keberangkatan tiket yang akan diperbarui: ";
-                getline(cin, keberangkatan);
-
-                bool isAlpha = true;
-                for (char ch : keberangkatan) {
-                    if (!isalpha(ch) && ch != ' ') {
-                        isAlpha = false;
-                        break;
-                    }
-                }
-
-                if (keberangkatan.empty() || !isAlpha) {
-                    cout << "Nama kota keberangkatan hanya boleh berisi huruf dan spasi. Masukkan kembali." << endl;
-                } else {
-                    break;
-                }
-            } while (true);
-
-            // Error handling untuk kota tujuan
-            do {
-                cout << "Masukkan Kota Tujuan tiket yang akan diperbarui: ";
-                getline(cin, tujuan);
-
-                bool isAlpha = true;
-                for (char ch : tujuan) {
-                    if (!isalpha(ch) && ch != ' ') {
-                        isAlpha = false;
-                        break;
-                    }
-                }
-
-                if (tujuan.empty() || !isAlpha) {
-                    cout << "Nama kota tujuan hanya boleh berisi huruf dan spasi. Masukkan kembali." << endl;
-                } else {
-                    break;
-                }
-            } while (true);
+            cout << "Masukkan Kota Keberangkatan tiket yang akan diperbarui: ";
+            getline(cin, keberangkatan);
+            cout << "Masukkan Kota Tujuan tiket yang akan diperbarui: ";
+            getline(cin, tujuan);
 
             // Error handling untuk format jam
             do {
@@ -315,33 +271,29 @@ void updateTiket(int nomorUrutan) {
                 cin >> jam;
 
                 if (jam.length() != 5 || jam[2] != ':' || stoi(jam.substr(0, 2)) < 0 || stoi(jam.substr(0, 2)) > 23 || stoi(jam.substr(3, 2)) < 0 || stoi(jam.substr(3, 2)) > 59) {
-                    cout << "Format jam tidak valid Gunakan format 24 jam seperti 'HH:MM'" << endl;
+                    cout << "Format jam tidak valid. Gunakan format 24 jam seperti 'HH:MM'" << endl;
                 } else {
                     break;
                 }
             } while (true);
 
-            // Error handling untuk jumlah kursi
             do {
                 cout << "Masukkan Jumlah Kursi Baru: ";
                 cin >> kursi;
 
-                if (cin.fail() || kursi <= 0) {
-                    cout << "Jumlah kursi harus berupa angka lebih dari 0. Masukkan kembali." << endl;
-                    cin.clear();
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                if (kursi <= 0) {
+                    cout << "Jumlah kursi harus lebih dari 0. Masukkan kembali." << endl;
                 } else {
                     break;
                 }
             } while (true);
 
-            // Error handling untuk harga
             do {
                 cout << "Masukkan Harga Baru: ";
                 cin >> harga;
 
                 if (harga <= 0) {
-                    cout << "Harga harus lebih dari 0 Masukkan kembali" << endl;
+                    cout << "Harga harus lebih dari 0. Masukkan kembali." << endl;
                 } else {
                     break;
                 }
@@ -353,7 +305,7 @@ void updateTiket(int nomorUrutan) {
             current->kursi = kursi;
             current->harga = harga;
 
-            cout << "Data tiket berhasil diperbarui" << endl;
+            cout << "Data tiket berhasil diperbarui." << endl;
             return;
         }
         nomor++;
@@ -361,7 +313,6 @@ void updateTiket(int nomorUrutan) {
     }
     cout << "Tiket dengan nomor urutan tersebut tidak ditemukan, data tidak dapat diperbarui" << endl;
 }
-
 
 // Fungsi untuk menghapus tiket di awal linked list
 void deleteTiket(int posisi, const string& targetKeberangkatan) {
@@ -970,19 +921,25 @@ int main() {
 
             switch (menu_utama) {
                 case 1:
-                    // Fungsi pendaftaran
+                    lakukanPendaftaran();
                     break;
                 case 2:
                     currentUser = lakukanLogin();
                     if (currentUser.username.empty()) {
-                        percobaanLogin--; // Kurangi jumlah percobaan jika login gagal
+                        percobaanLogin--;
                         cout << "Sisa percobaan login: " << percobaanLogin << endl;
                         if (percobaanLogin == 0) {
-                            cout << "Anda telah menggunakan semua percobaan login, Program berhenti" << endl;
+                            cout << "Anda telah menggunakan semua percobaan login. Program berhenti." << endl;
                             exit(0);
                         }
+                    } else if (currentUser.isAdmin) {
+                        // Jika login sebagai admin, tampilkan menu admin
+                        menuAdmin(currentUser, tiketList);
+                        // Lakukan logika untuk menu admin
+                        // Setelah selesai, logout admin
+                        currentUser = Pengguna();
                     }
-                break;
+                    break;
                 case 3:
                     cout << "Keluar dari program" << endl;
                     exit(0);
@@ -995,6 +952,5 @@ int main() {
             currentUser = Pengguna();  // Mengosongkan data pengguna setelah keluar dari menu setelah login
         }
     }
-
     return 0;
 }
